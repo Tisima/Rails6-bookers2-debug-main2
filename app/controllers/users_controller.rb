@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :move_to_signed_in
   before_action :ensure_correct_user, only: [:update, :edit]
 
   def show
@@ -30,6 +31,12 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :introduction, :profile_image)
+  end
+
+  def move_to_signed_in
+    unless user_signed_in?
+      redirect_to user_session_path
+    end
   end
 
   def ensure_correct_user

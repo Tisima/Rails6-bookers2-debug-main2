@@ -1,5 +1,7 @@
 class BooksController < ApplicationController
-  before_action :a_correct_user, only: [:edit, :update]
+  before_action :move_to_signed_in
+  before_action :a_correct_user, only: [:edit, :update, :destroy]
+
 
   def show
     @book = Book.find(params[:id])
@@ -49,11 +51,17 @@ class BooksController < ApplicationController
     params.require(:book).permit(:title, :body)
   end
 
+  def move_to_signed_in
+    unless user_signed_in?
+      redirect_to user_session_path
+    end
+  end
+
   def a_correct_user
     @book = Book.find(params[:id])
-    @user = @book.user.id
+    @user = @book.user
     unless @user == current_user
-      redirect_to user_path(current_user)
+      redirect_to books_path
     end
   end
 end
